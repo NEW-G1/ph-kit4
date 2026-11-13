@@ -1,0 +1,99 @@
+{
+  "task": "mart_daily_us_covid",
+  "iteration": 1,
+  "contract_version": 1,
+  "request_kind": "new_build",
+  "modules": {
+    "expert": {
+      "on": [],
+      "version": null
+    }
+  },
+  "ts": "2026-11-13T14:33:38+09:00",
+  "bytes_total": 14334336,
+  "rungs": [
+    {
+      "rung": "L0",
+      "ds": null,
+      "status": "pass",
+      "metrics": {
+        "stage": "contract",
+        "load_tasks": 3,
+        "gate_tasks": 3,
+        "tables": 3,
+        "checks": 10,
+        "traces": 10,
+        "dag": "pass"
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L1",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "bytes_processed": 0,
+        "bytes_accuracy": "LOWER_BOUND"
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L2",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "dataset": "ai_dev",
+        "table": "mart_daily_us_covid"
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L3",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "gate": "gate_mart_us_covid_daily",
+        "gate_sha256": "4992d4a4624009f65204c9279299d8351b3ce9dba38d5870cb3f1fd3c8cfd4af",
+        "checks": [
+          "C-03"
+        ]
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L4",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "checks": [
+          "C-05",
+          "C-06",
+          "I-01",
+          "I-02",
+          "I-03"
+        ]
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L5",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "row_count": "1158",
+        "checks": [
+          "I-04"
+        ]
+      },
+      "error_type": null,
+      "error_class": null
+    }
+  ],
+  "verdict": "pass",
+  "halt_reason": null
+}
