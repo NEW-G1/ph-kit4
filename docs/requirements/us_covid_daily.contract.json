@@ -1,0 +1,135 @@
+{
+  "mart": "us_covid_daily",
+  "version": 1,
+  "reverts_to": null,
+  "requested_by": "requester1",
+  "requirements": [
+    {"id": "R-01", "text": "일별 전국 누적 확진·사망 건수는 같은 날 원천 us_states 주별 누적값의 합과 같다", "section": 3},
+    {"id": "R-02", "text": "일별 신규 확진·사망 건수는 전국 누적의 전일 대비 차이이고 첫 날은 누적값 그대로다. 정정으로 음수가 될 수 있고 보정하지 않는다", "section": 3},
+    {"id": "R-03", "text": "마트는 날짜당 1행이고 원천의 첫 날부터 마지막 날까지 빠진 날짜가 없다", "section": 9},
+    {"id": "R-04", "text": "raw·stg는 원천 행을 잃거나 중복하지 않고 키(날짜, 주 FIPS 코드)가 고유하다", "section": 4},
+    {"id": "R-05", "text": "같은 날짜로 재실행해도 결과가 같다(멱등)", "section": 7}
+  ],
+  "sources": [
+    "bigquery-public-data.covid19_nyt.us_states"
+  ],
+  "load": {"mode": "snapshot"},
+  "interview": {
+    "metrics": [
+      {"name": "cum_confirmed_cnt", "formula": "SUM(confirmed_cases) GROUP BY date (같은 날 주별 누적 확진의 합)", "unit": "건", "base_date": "원천 date 컬럼(보고일)", "exclude": "없음. 원천 그대로 합산하고 정정은 보정하지 않음", "numerator": null, "denominator": null},
+      {"name": "cum_death_cnt", "formula": "SUM(deaths) GROUP BY date (같은 날 주별 누적 사망의 합)", "unit": "건", "base_date": "원천 date 컬럼(보고일)", "exclude": "없음. 원천 그대로 합산하고 정정은 보정하지 않음", "numerator": null, "denominator": null},
+      {"name": "new_confirmed_cnt", "formula": "cum_confirmed_cnt - LAG(cum_confirmed_cnt) OVER (ORDER BY report_date), 첫 날은 cum_confirmed_cnt", "unit": "건", "base_date": "원천 date 컬럼(보고일)", "exclude": "없음. 음수 그대로 둠", "numerator": null, "denominator": null},
+      {"name": "new_death_cnt", "formula": "cum_death_cnt - LAG(cum_death_cnt) OVER (ORDER BY report_date), 첫 날은 cum_death_cnt", "unit": "건", "base_date": "원천 date 컬럼(보고일)", "exclude": "없음. 음수 그대로 둠", "numerator": null, "denominator": null}
+    ],
+    "grain": "전국 1일 1행 (report_date 하나가 행 1개). raw·stg는 주(영토 포함)·일 1행",
+    "keys": ["snapshot_date", "report_date"],
+    "assumptions": [
+      "원천 us_states는 일반 테이블(뷰 아님), 날짜 파티션 없음, 61,942행, 2.4 MB로 500 MB 이하라 snapshot 적재를 쓴다 (2026-11-13 INFORMATION_SCHEMA와 dry-run 조회)",
+      "전국 = 원천에 있는 56개 주·영토 전체의 합. 영토(괌·푸에르토리코 등)를 따로 빼지 않는다",
+      "원천 기간은 2020-01-21~2023-03-23이고 1,158일에 날짜 간격이 없다. 2023-03-23 이후 갱신이 없는 과거 데이터라 주 1회 snapshot으로 충분하다",
+      "원천 주별 누적이 전일보다 줄어든 행이 409건, 전국 합계 확진이 전일보다 줄어든 날이 3일 있다(NYT 사후 정정). 보정하지 않고 알려진 데이터 특성으로 문서화한다",
+      "초기 일부 날짜는 보고 주가 1개뿐이라 전국 합계는 보고된 주만의 합이다",
+      "개인 식별 컬럼 없음(지역 단위 집계, docs/architecture/pii_columns.md 검토 완료)"
+    ],
+    "out_of_scope": [
+      "주별·카운티별 마트와 주 단위 지표",
+      "보고 주 수(state_cnt) 컬럼",
+      "100만 명당 등 인구 대비 비율 지표",
+      "정정(누적 감소) 보정, 7일 이동평균",
+      "원천 us_counties·excess_deaths·mask_use_by_county 사용",
+      "일별 스케줄 운영과 운영 데이터셋 적재(결재 후 별도)"
+    ]
+  },
+  "tables": [
+    {
+      "name": "raw_us_states",
+      "name_ko": "미국 주별 코로나 원천 복사",
+      "layer": "raw",
+      "task": "raw_us_states",
+      "grain": "snapshot_date × 날짜 × 주 1행 (원천 us_states 가공 없이 복사)",
+      "keys": ["snapshot_date", "date", "state_fips_code"],
+      "columns": [
+        {"name": "date", "name_ko": "보고일", "type": "DATE", "description": "원천 us_states의 보고일"},
+        {"name": "state_name", "name_ko": "주 이름", "type": "STRING", "description": "원천의 주·영토 이름"},
+        {"name": "state_fips_code", "name_ko": "주 FIPS 코드", "type": "STRING", "description": "주·영토를 구분하는 2자리 FIPS 코드"},
+        {"name": "confirmed_cases", "name_ko": "누적 확진 건수", "type": "INT64", "description": "해당 주의 보고일까지 누적 확진 건수. 날짜 간 합산하면 중복 집계됨"},
+        {"name": "deaths", "name_ko": "누적 사망 건수", "type": "INT64", "description": "해당 주의 보고일까지 누적 사망 건수. 날짜 간 합산하면 중복 집계됨"},
+        {"name": "snapshot_date", "name_ko": "스냅샷 일자", "type": "DATE", "description": "적재 실행 일자(Airflow ds). 일 단위 파티션 컬럼"}
+      ]
+    },
+    {
+      "name": "stg_us_states",
+      "name_ko": "미국 주별 일별 누적 정제",
+      "layer": "stg",
+      "task": "stg_us_states",
+      "grain": "snapshot_date × 보고일 × 주 1행",
+      "keys": ["snapshot_date", "report_date", "state_fips_code"],
+      "columns": [
+        {"name": "report_date", "name_ko": "보고일", "type": "DATE", "description": "원천 date 컬럼. 해당 주의 누적값이 보고된 날짜"},
+        {"name": "state_fips_code", "name_ko": "주 FIPS 코드", "type": "STRING", "description": "주·영토를 구분하는 2자리 FIPS 코드"},
+        {"name": "state_name", "name_ko": "주 이름", "type": "STRING", "description": "주·영토 이름"},
+        {"name": "cum_confirmed_cnt", "name_ko": "누적 확진 건수", "type": "INT64", "description": "해당 주의 보고일까지 누적 확진 건수. 날짜 간 합산하면 중복 집계됨. 원천 정정으로 전일보다 줄 수 있음"},
+        {"name": "cum_death_cnt", "name_ko": "누적 사망 건수", "type": "INT64", "description": "해당 주의 보고일까지 누적 사망 건수. 날짜 간 합산하면 중복 집계됨. 원천 정정으로 전일보다 줄 수 있음"},
+        {"name": "snapshot_date", "name_ko": "스냅샷 일자", "type": "DATE", "description": "적재 실행 일자(Airflow ds). 일 단위 파티션 컬럼"}
+      ]
+    },
+    {
+      "name": "mart_daily_us_covid",
+      "name_ko": "일별 전국 코로나 확진·사망 마트",
+      "layer": "mart",
+      "task": "mart_daily_us_covid",
+      "grain": "snapshot_date × 보고일 1행 (전국 1일 1행)",
+      "keys": ["snapshot_date", "report_date"],
+      "columns": [
+        {"name": "report_date", "name_ko": "보고일", "type": "DATE", "description": "누적값이 보고된 날짜. 원천 date 컬럼"},
+        {"name": "cum_confirmed_cnt", "name_ko": "전국 누적 확진 건수", "type": "INT64", "description": "같은 날 주·영토별 누적 확진 건수의 합. 날짜 간 합산하면 중복 집계됨. 보고 주가 적은 초기 날짜는 보고된 주만의 합이고, 원천 정정으로 전일보다 줄 수 있음"},
+        {"name": "cum_death_cnt", "name_ko": "전국 누적 사망 건수", "type": "INT64", "description": "같은 날 주·영토별 누적 사망 건수의 합. 날짜 간 합산하면 중복 집계됨. 보고 주가 적은 초기 날짜는 보고된 주만의 합이고, 원천 정정으로 전일보다 줄 수 있음"},
+        {"name": "new_confirmed_cnt", "name_ko": "일별 신규 확진 건수", "type": "INT64", "description": "전국 누적 확진의 전일 대비 차이. 첫 날은 누적값 그대로. 원천 정정이 있던 날은 음수가 될 수 있고 보정하지 않음"},
+        {"name": "new_death_cnt", "name_ko": "일별 신규 사망 건수", "type": "INT64", "description": "전국 누적 사망의 전일 대비 차이. 첫 날은 누적값 그대로. 원천 정정이 있던 날은 음수가 될 수 있고 보정하지 않음"},
+        {"name": "snapshot_date", "name_ko": "스냅샷 일자", "type": "DATE", "description": "적재 실행 일자(Airflow ds). 일 단위 파티션 컬럼"}
+      ]
+    }
+  ],
+  "dag": {
+    "tasks": [
+      {"id": "raw_us_states", "kind": "load", "layer": "raw", "upstream": []},
+      {"id": "gate_raw_us_covid_daily", "kind": "gate", "layer": "raw", "upstream": ["raw_us_states"]},
+      {"id": "stg_us_states", "kind": "load", "layer": "stg", "upstream": ["gate_raw_us_covid_daily"]},
+      {"id": "gate_stg_us_covid_daily", "kind": "gate", "layer": "stg", "upstream": ["stg_us_states"]},
+      {"id": "mart_daily_us_covid", "kind": "load", "layer": "mart", "upstream": ["gate_stg_us_covid_daily"]},
+      {"id": "gate_mart_us_covid_daily", "kind": "gate", "layer": "mart", "upstream": ["mart_daily_us_covid"]}
+    ]
+  },
+  "checks": {
+    "gates": [
+      {"id": "C-01", "rule": "raw_us_states의 당일 snapshot_date 파티션 행 수가 0보다 크다", "rung": "L3", "written_by": "verifier"},
+      {"id": "C-02", "rule": "stg_us_states의 snapshot_date, report_date, state_fips_code 조합이 고유하고 누적 확진·사망이 NULL이 아니며 음수가 아니다", "rung": "L3", "written_by": "verifier"},
+      {"id": "C-03", "rule": "mart_daily_us_covid의 report_date가 고유하고 누적 확진·사망이 NULL이 아니며 음수가 아니다", "rung": "L3", "written_by": "verifier"}
+    ],
+    "reconciliation": [
+      {"id": "C-04", "rule": "raw_us_states와 stg_us_states의 행 수가 원천 us_states 행 수와 오차 0으로 같다", "rung": "L4", "written_by": "verifier"},
+      {"id": "C-05", "rule": "mart_daily_us_covid의 행 수가 원천 us_states의 고유 date 수와 오차 0으로 같다", "rung": "L4", "written_by": "verifier"},
+      {"id": "C-06", "rule": "report_date별 mart의 누적 확진·사망이 원천 us_states를 같은 date로 합한 값과 오차 0으로 같다", "rung": "L4", "written_by": "verifier"}
+    ],
+    "invariants": [
+      {"id": "I-01", "rule": "mart의 일별 신규 확진·사망 합계가 마지막 보고일의 누적 확진·사망과 같다", "rung": "L4", "written_by": "verifier"},
+      {"id": "I-02", "rule": "mart의 신규 확진·사망이 첫 날은 누적값과 같고 그 외 날은 전일 누적과의 차이와 같다", "rung": "L4", "written_by": "verifier"},
+      {"id": "I-03", "rule": "mart의 최소 report_date부터 최대 report_date까지 빠진 날짜가 없다", "rung": "L4", "written_by": "verifier"},
+      {"id": "I-04", "rule": "같은 날짜로 2회 연속 실행한 mart의 행 수와 체크섬이 같다", "rung": "L5", "written_by": "verifier"}
+    ]
+  },
+  "traces_to": [
+    {"req": "R-01", "check": "C-06", "rung": "L4"},
+    {"req": "R-01", "check": "C-03", "rung": "L3"},
+    {"req": "R-02", "check": "I-01", "rung": "L4"},
+    {"req": "R-02", "check": "I-02", "rung": "L4"},
+    {"req": "R-03", "check": "C-05", "rung": "L4"},
+    {"req": "R-03", "check": "I-03", "rung": "L4"},
+    {"req": "R-04", "check": "C-01", "rung": "L3"},
+    {"req": "R-04", "check": "C-02", "rung": "L3"},
+    {"req": "R-04", "check": "C-04", "rung": "L4"},
+    {"req": "R-05", "check": "I-04", "rung": "L5"}
+  ],
+  "schedule": {"refresh": "주 1회 snapshot 적재(원천 전체 복사 후 전체 이력 재집계)", "retention_days": 90},
+  "modules": {"expert": {"on": [], "version": null}}
+}
