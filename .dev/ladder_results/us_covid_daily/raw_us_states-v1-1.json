@@ -1,0 +1,91 @@
+{
+  "task": "raw_us_states",
+  "iteration": 1,
+  "contract_version": 1,
+  "request_kind": "new_build",
+  "modules": {
+    "expert": {
+      "on": [],
+      "version": null
+    }
+  },
+  "ts": "2026-11-13T14:32:33+09:00",
+  "bytes_total": 16808630,
+  "rungs": [
+    {
+      "rung": "L0",
+      "ds": null,
+      "status": "pass",
+      "metrics": {
+        "stage": "contract",
+        "load_tasks": 3,
+        "gate_tasks": 3,
+        "tables": 3,
+        "checks": 10,
+        "traces": 10,
+        "dag": "pass"
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L1",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "bytes_processed": 0,
+        "bytes_accuracy": "LOWER_BOUND"
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L2",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "dataset": "ai_dev",
+        "table": "raw_us_states"
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L3",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "gate": "gate_raw_us_covid_daily",
+        "gate_sha256": "318a8f805f8f086760c1a4f28b1af6125f3af4c41c63cc6d30a9e18899cef1fb",
+        "checks": [
+          "C-01"
+        ]
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L4",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "checks": []
+      },
+      "error_type": null,
+      "error_class": null
+    },
+    {
+      "rung": "L5",
+      "ds": "2026-11-13",
+      "status": "pass",
+      "metrics": {
+        "row_count": "61942",
+        "checks": []
+      },
+      "error_type": null,
+      "error_class": null
+    }
+  ],
+  "verdict": "pass",
+  "halt_reason": null
+}
