@@ -1,0 +1,8 @@
+# Harness scripts and tests (python -m pip install -r requirements-dev.txt)
+# ASCII only: pip on Korean Windows reads this file as cp949
+jinja2==3.1.4
+pytest
+pytest-xdist==3.8.0
+openpyxl==3.1.5
+# Dashboard browser tests and captures only (then: python -m playwright install chromium). Tests skip without it, fail with REQUIRE_BROWSER=1
+playwright==1.64.1

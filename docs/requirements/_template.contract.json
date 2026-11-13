@@ -1,0 +1,57 @@
+{
+  "mart": "",
+  "version": 1,
+  "reverts_to": null,
+  "requested_by": null,
+  "requirements": [
+    {"id": "R-01", "text": "", "section": null}
+  ],
+  "sources": [
+    "<원천_프로젝트>.<원천_데이터셋>.<table>"
+  ],
+  "load": {"mode": "snapshot"},
+  "interview": {
+    "metrics": [
+      {"name": "", "formula": "", "unit": "", "base_date": "", "exclude": "", "numerator": null, "denominator": null}
+    ],
+    "grain": "",
+    "keys": [],
+    "assumptions": [],
+    "out_of_scope": []
+  },
+  "tables": [
+    {
+      "name": "",
+      "name_ko": "",
+      "layer": "",
+      "task": "",
+      "grain": "",
+      "keys": [],
+      "columns": [
+        {"name": "", "name_ko": "", "type": "", "description": ""}
+      ]
+    }
+  ],
+  "dag": {
+    "tasks": [
+      {"id": "", "kind": "load", "layer": "", "upstream": []},
+      {"id": "gate_<층>_<마트>", "kind": "gate", "layer": "", "upstream": []}
+    ]
+  },
+  "checks": {
+    "gates": [
+      {"id": "C-01", "rule": "", "rung": "L3", "written_by": "verifier"}
+    ],
+    "reconciliation": [
+      {"id": "C-02", "rule": "", "rung": "L4", "written_by": "verifier"}
+    ],
+    "invariants": [
+      {"id": "I-01", "rule": "", "rung": "L4", "written_by": "verifier"}
+    ]
+  },
+  "traces_to": [
+    {"req": "R-01", "check": "C-01", "rung": "L3"}
+  ],
+  "schedule": {"refresh": "", "retention_days": null},
+  "modules": {"expert": {"on": [], "version": null}}
+}

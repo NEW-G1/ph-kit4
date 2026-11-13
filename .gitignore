@@ -1,0 +1,40 @@
+# 비밀 (커밋 금지)
+.env
+.env.*
+!.env.example
+.envrc
+*-key.json
+secrets/
+
+# Claude Code 개인 설정 (팀 설정 .claude/settings.json 은 커밋. 파일명은 2.1.311 문서로 확인)
+.claude/settings.local.json
+# 키트 개인 설정 (scripts/setup/kit_setup.py가 씀: 프로젝트 ID·gcloud 설정 폴더·GitHub 아이디)
+.kit_local.json
+
+# Hook 실행 상태 (고친 경로, 재시도 수)
+.claude/state/
+
+# 생성물
+out/
+
+# 로그 기록 도구의 잠금 파일 (.dev의 로그 자체는 커밋한다)
+.dev/*.lock
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# IDE·OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 주의
+# - *.json 전체 무시는 쓰지 않는다. .claude/settings.json 이 커밋되지 않기 때문 (05 1단계 판단 #4)
+# - .dev/ 의 로그(*.jsonl, progress.md)는 측정 자료이므로 커밋한다

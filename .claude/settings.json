@@ -1,0 +1,55 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(**/.env)",
+      "Read(~/.claude.json)",
+      "Bash(bq rm:*)",
+      "PowerShell(bq rm:*)",
+      "Bash(bq update:*)",
+      "PowerShell(bq update:*)",
+      "Bash(gcloud iam:*)",
+      "PowerShell(gcloud iam:*)",
+      "Bash(gcloud projects add-iam-policy-binding:*)",
+      "PowerShell(gcloud projects add-iam-policy-binding:*)",
+      "Bash(git push:*)",
+      "PowerShell(git push:*)",
+      "Edit(expertise/**)",
+      "Edit(.claude/rules/expert/**)",
+      "Edit(dags/harness_config.json)",
+      "Bash(scripts/modules/expert.sh:*)",
+      "PowerShell(scripts/modules/expert.sh:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/check_bash.py\"" }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|Read",
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/check_write.py\"" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/after_edit.py\"" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/on_stop.py\"", "timeout": 900 }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "source": {"project": "bigquery-public-data", "dataset": "thelook_ecommerce", "location": "US"},
+  "datasets": {"raw": "thelook_raw", "stg": "thelook_stg", "mart": "thelook_mart"},
+  "retired_datasets": [],
+  "om": {"service": "om-service"}
+}

@@ -1,0 +1,10 @@
+#!/bin/sh
+# 커밋에 들어가는 contract를 L0로 검사한다 (scripts/setup/precommit.py, 결정 80). kit_setup.py가 켠다
+cd "$(git rev-parse --show-toplevel)" || exit 0
+if command -v python >/dev/null 2>&1; then
+  exec python scripts/setup/precommit.py
+elif command -v python3 >/dev/null 2>&1; then
+  exec python3 scripts/setup/precommit.py
+fi
+echo "경고: python을 찾지 못해 contract 형식 검사를 건너뜀" >&2
+exit 0
