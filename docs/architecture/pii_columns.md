@@ -5,7 +5,7 @@
 
 > 데이터셋 이름의 출처는 `dags/harness_config.json`입니다.
 
-검토한 원천: `bigquery-public-data.thelook_ecommerce`
+검토한 원천: `bigquery-public-data.covid19_nyt`
 
 > 위 줄은 이 표를 검토한 원천(`<프로젝트>.<데이터셋>`)입니다. L0는 이 줄이 없거나 `dags/harness_config.json`의 `source`와 다르면 멈춥니다(사람 파일 문제, halt `input_invalid`). 원천을 바꾸면 새 원천의 컬럼을 검토해 표와 이 줄을 함께 다시 씁니다. 후보는 인터뷰의 "개인정보 후보 찾기"(`docs/plan/03_harness_guide.md`(원본 저장소 문서, 키트에 없음) §3.3)가 메타데이터로 찾고, 확정은 사람이 합니다.
 
@@ -29,16 +29,8 @@
 
 | 원천 테이블 | 컬럼 | 근거 |
 |---|---|---|
-| `users` | `first_name` | 이름. 1단계 stg_users 제외 기준 |
-| `users` | `last_name` | 이름. 1단계 stg_users 제외 기준 |
-| `users` | `email` | 이메일. 1단계 stg_users 제외 기준 |
-| `users` | `street_address` | 주소. 1단계 stg_users 제외 기준 |
-| `users` | `postal_code` | 우편번호. 1단계 stg_users 제외 기준 |
-| `users` | `latitude` | 위도. 1단계 stg_users 제외 기준 |
-| `users` | `longitude` | 경도. 1단계 stg_users 제외 기준 |
-| `users` | `user_geom` | 위경도와 같은 정보 |
-| `events` | `ip_address` | 개인 식별 정보 |
+| (없음) | | 4개 테이블(`us_counties`, `us_states`, `excess_deaths`, `mask_use_by_county`) 모두 지역 단위 집계이고 개인 단위 컬럼이 없음(컬럼 이름 기준) |
 
-원천 컬럼 이름은 `bq show --schema`로 확인했습니다(2026-10-29).
+원천 컬럼 이름은 원천 `INFORMATION_SCHEMA.COLUMNS` 조회(컬럼 이름·타입만, 데이터 값 조회 없음)로 확인했습니다(2026-11-13).
 
 개인 식별 컬럼이 없는 원천이면 표에 `| (없음) | | 검토 근거 |` 행 하나만 둡니다. 표가 그냥 비어 있으면 L0가 멈춥니다.
