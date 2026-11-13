@@ -1,0 +1,19 @@
+{
+  "dags/sql/dq/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "dags/sql/dq/gate_mart_us_covid_daily.sql": "4992d4a4624009f65204c9279299d8351b3ce9dba38d5870cb3f1fd3c8cfd4af",
+  "dags/sql/dq/gate_raw_us_covid_daily.sql": "318a8f805f8f086760c1a4f28b1af6125f3af4c41c63cc6d30a9e18899cef1fb",
+  "dags/sql/dq/gate_stg_us_covid_daily.sql": "0570cb8a4560cb53742b4faa26470f40eb98ad868eba66e46db2f15b5a1a2a80",
+  "docs/architecture/pii_columns.md": "00f74b5d742381f2f33a1faf127235ac17ee482fe029005239b688567d98f43c",
+  "docs/requirements/us_covid_daily.contract.json": "a1480cbcee350ffc3df8c1c88bde8c931f361d168cce08802a7aebcf48413a53",
+  "docs/requirements/us_covid_daily.md": "d48b3ee2f4fbaf56c56054dc9bd8a005b12e2e6b27e0f0052400b3ade3ac6554",
+  "docs/requirements/us_covid_daily_checks/l3/C-01.sql": "685b3ae027c57e04c61bdb34224dddafd1b6c4553d8ce6250d70bef1b6c576c2",
+  "docs/requirements/us_covid_daily_checks/l3/C-02.sql": "2e5e9b38776103a29cc531f674e6335fd25ffffe0a4caf5be4d95ac3737a0015",
+  "docs/requirements/us_covid_daily_checks/l3/C-03.sql": "87209ba012d96f03849c5a711323d2671718fe621d99ec30c2bd70befd81b6e8",
+  "docs/requirements/us_covid_daily_checks/l4/C-04.sql": "4b9ff1d05418193e7ed891dbafaaa3796597a1ebc417f58c47ece6f670b8ac79",
+  "docs/requirements/us_covid_daily_checks/l4/C-05.sql": "5abcbc23d2989a3f9b1b7d21472fe39a41eb88bc750dd4c2157aa0f3ca904c2d",
+  "docs/requirements/us_covid_daily_checks/l4/C-06.sql": "16a5ecd7a9a58069c54bd5f6dd18ec03d1e47f4a55e45394c2df3c028cd7d8b1",
+  "docs/requirements/us_covid_daily_checks/l4/I-01.sql": "af5535dff4e59d770a8ef7bd46b4271d4dd6366e8b0fa4e11a0c9ee7e94ca10b",
+  "docs/requirements/us_covid_daily_checks/l4/I-02.sql": "601561211ee09626439b377c0b640ff124e7dcc38413da7b43b8d73a66fbf651",
+  "docs/requirements/us_covid_daily_checks/l4/I-03.sql": "b01680f496a61697c1d63e354a3070af0bd6788bcb27f4230ab9d621b2ed97cb",
+  "docs/requirements/us_covid_daily_checks/l5/I-04.sql": "0f57cdef585ba591f7bab89b53beb7e538501155fdd0f49131945770eeecc30f"
+}
